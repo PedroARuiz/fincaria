@@ -24,7 +24,7 @@ tracked purely by milestone and its dependencies.
 
 | # | Milestone | Focus | Status |
 |---|-----------|-------|--------|
-| 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | 🚧 In progress |
+| 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | ✅ Done |
 | 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ⬜ Not started |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ⬜ Not started |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ⬜ Not started |
@@ -44,11 +44,13 @@ Actions, Docker, Redis, Kafka or RabbitMQ.
 
 ---
 
-## Milestone 0 — Environment & project baseline 🚧 In progress
+## Milestone 0 — Environment & project baseline ✅ Done
 
-**Progress so far:** git repo created, `main` tracking `origin/main` and
-in sync. Still pending: a real `README.md` (currently just a placeholder),
-the first ADR, and the Gradle/Kotlin skeleton.
+**Completed:** git repo created and synced with `origin/main`; `README.md`
+with the product vision; ADR-0001 documenting the foundational stack;
+empty Gradle/Kotlin skeleton (`backend` module, JDK 21 toolchain,
+`com.fincaria` package), verified with `./gradlew build` and
+`./gradlew run`.
 
 **Concepts:** JDK/toolchain management, Gradle fundamentals (contrasted
 with Android/Gradle knowledge already held), IntelliJ for backend work, git
