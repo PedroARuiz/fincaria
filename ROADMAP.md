@@ -25,7 +25,7 @@ tracked purely by milestone and its dependencies.
 | # | Milestone | Focus | Status |
 |---|-----------|-------|--------|
 | 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | ✅ Done |
-| 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ⬜ Not started |
+| 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | 🚧 In progress |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ⬜ Not started |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ⬜ Not started |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ⬜ Not started |
@@ -71,7 +71,7 @@ builds with `./gradlew build` with zero source files.
 
 ---
 
-## Milestone 1 — Spring Boot & hexagonal foundations
+## Milestone 1 — Spring Boot & hexagonal foundations 🚧 In progress
 
 **Concepts:** Inversion of Control / Spring's `ApplicationContext`, beans
 and bean scopes, auto-configuration, `@ConfigurationProperties`, profiles
