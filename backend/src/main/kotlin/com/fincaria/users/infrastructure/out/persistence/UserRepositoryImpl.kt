@@ -11,4 +11,7 @@ class UserRepositoryImpl : UserRepository {
     override fun save(user: User): User = user.also {
         users[user.id] = it
     }
+
+    override fun existsByEmail(email: String): Boolean =
+        users.filterValues { it.email == email }.isNotEmpty()
 }
