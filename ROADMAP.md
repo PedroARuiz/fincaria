@@ -25,7 +25,7 @@ tracked purely by milestone and its dependencies.
 | # | Milestone | Focus | Status |
 |---|-----------|-------|--------|
 | 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | ✅ Done |
-| 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | 🚧 In progress |
+| 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ✅ Done |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ⬜ Not started |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ⬜ Not started |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ⬜ Not started |
@@ -71,7 +71,18 @@ builds with `./gradlew build` with zero source files.
 
 ---
 
-## Milestone 1 — Spring Boot & hexagonal foundations 🚧 In progress
+## Milestone 1 — Spring Boot & hexagonal foundations ✅ Done
+
+**Completed:** Spring Boot wired in (web/validation/actuator starters, BOM via
+`platform()`); ADR-0002 (hexagonal layering convention per bounded context)
+and ADR-0003 (Spring wiring strategy for use cases/adapters); the `users`
+bounded context (`domain`/`application`/`infrastructure`) with
+`CreateUserUseCase`, an in-memory `UserRepository` adapter, and the
+email-uniqueness business rule; `UserController` with request/response
+DTOs and Bean Validation; a shared `GlobalExceptionHandler` mapping
+validation and domain errors to HTTP status codes; an end-to-end
+integration test (`MockMvcTester`) covering the success, validation-error
+and conflict paths.
 
 **Concepts:** Inversion of Control / Spring's `ApplicationContext`, beans
 and bean scopes, auto-configuration, `@ConfigurationProperties`, profiles
