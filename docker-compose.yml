@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgis/postgis:latest
+    platform: linux/amd64
+    environment:
+      POSTGRES_USER: fincaria_local_user
+      POSTGRES_PASSWORD: fincaria_local_pwd
+      POSTGRES_DB: fincaria_local_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - fincaria-db-data:/var/lib/postgresql
+
+volumes:
+  fincaria-db-data:

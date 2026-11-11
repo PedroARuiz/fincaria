@@ -2,3 +2,7 @@ spring:
   web:
     locale: en
     locale-resolver: fixed
+  datasource:
+    url: jdbc:postgresql://localhost:5432/fincaria_local_db
+    username: fincaria_local_user
+    password: fincaria_local_pwd
