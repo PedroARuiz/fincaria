@@ -1,5 +1,6 @@
 package com.fincaria.users.infrastructure.`in`.web
 
+import com.fincaria.PostgreSQLTestContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +12,7 @@ import org.springframework.web.context.WebApplicationContext
 @SpringBootTest
 class UserControllerTest(
     @Autowired context: WebApplicationContext,
-) {
+) : PostgreSQLTestContainer() {
     private val mockMvc = MockMvcTester.from(context)
 
     @Test
