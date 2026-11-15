@@ -12,7 +12,7 @@ import java.util.*
 class CreateFarmService(
     private val farmRepository: FarmRepository,
 ) : CreateFarmUseCase {
-    override fun execute(command: CreateFarmCommand): Farm =
+    override fun invoke(command: CreateFarmCommand): Farm =
         if (farmRepository.existsByCadastralReference(command.cadastralReference)) {
             throw DuplicatedCadastralReferenceException(command.cadastralReference)
         } else {

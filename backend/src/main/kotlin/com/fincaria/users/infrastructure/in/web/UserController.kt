@@ -18,7 +18,7 @@ class UserController(
     @PostMapping
     fun createUser(@Valid @RequestBody request: CreateUserRequest): ResponseEntity<CreateUserResponse> {
         val command = CreateUserCommand(name = request.name, email = request.email)
-        val user = createUserUseCase.execute(command)
+        val user = createUserUseCase(command)
         val response = CreateUserResponse(id = user.id, name = user.name, email = user.email)
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }

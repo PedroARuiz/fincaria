@@ -29,7 +29,7 @@ class FarmController(
             cadastralReference = CadastralReference(request.cadastralReference),
             cropType = CropType.valueOf(request.cropType),
         )
-        val farm = createFarmUseCase.execute(command)
+        val farm = createFarmUseCase(command)
         val response = FarmResponse(
             id = farm.id,
             userId = farm.userId,
@@ -41,7 +41,7 @@ class FarmController(
 
     @GetMapping("/api/users/{userId}/farms")
     fun getUserFarms(@PathVariable userId: String): ResponseEntity<List<FarmResponse>> {
-        val farms = getUserFarmsUseCase.execute(userId = userId)
+        val farms = getUserFarmsUseCase(userId = userId)
         val response = farms.map { farm ->
             FarmResponse(
                 id = farm.id,

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service
 class GetUserFarmsService(
     private val farmRepository: FarmRepository,
 ) : GetUserFarmsUseCase {
-    override fun execute(userId: String): List<Farm> =
+    override fun invoke(userId: String): List<Farm> =
         farmRepository.getUserFarms(userId)
 }

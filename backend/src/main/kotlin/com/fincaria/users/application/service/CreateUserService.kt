@@ -12,7 +12,7 @@ import java.util.UUID
 class CreateUserService(
     private val userRepository: UserRepository,
 ) : CreateUserUseCase {
-    override fun execute(command: CreateUserCommand): User {
+    override fun invoke(command: CreateUserCommand): User {
         if (userRepository.existsByEmail(command.email)) {
             throw EmailAlreadyInUseException(command.email)
         }

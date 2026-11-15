@@ -8,5 +8,5 @@ data class CreateUserCommand(
 )
 
 interface CreateUserUseCase {
-    fun execute(command: CreateUserCommand): User
+    operator fun invoke(command: CreateUserCommand): User
 }

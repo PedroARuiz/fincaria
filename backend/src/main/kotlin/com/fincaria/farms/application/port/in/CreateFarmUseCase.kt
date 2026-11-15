@@ -11,5 +11,5 @@ data class CreateFarmCommand(
 )
 
 interface CreateFarmUseCase {
-    fun execute(command: CreateFarmCommand): Farm
+    operator fun invoke(command: CreateFarmCommand): Farm
 }
