@@ -26,7 +26,7 @@ tracked purely by milestone and its dependencies.
 |---|-----------|-------|--------|
 | 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | ✅ Done |
 | 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ✅ Done |
-| 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ⬜ Not started |
+| 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ✅ Done |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ⬜ Not started |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ⬜ Not started |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ⬜ Not started |
@@ -106,7 +106,18 @@ in-memory adapter, with a passing integration test (MockMvc/WebTestClient).
 
 ---
 
-## Milestone 2 — Persistence & data modeling
+## Milestone 2 — Persistence & data modeling ✅ Done
+
+**Completed:** `docker-compose.yml` with Postgres/PostGIS for local dev;
+Flyway migrations for `users` and `farms`; `users` re-pointed from the
+in-memory adapter to a real JPA adapter (`UserJpaEntity`,
+`UserJpaRepository`); second bounded context `farms` (`Farm`,
+`CadastralReference` value object with full format and checksum
+validation, `CropType` enum, `CreateFarmUseCase`, `GetUserFarmsUseCase`,
+JPA entity/repository/adapter, `FarmController`); `PostgreSQLTestContainer`
+wiring Testcontainers via a single container shared across test classes
+(chosen over one-per-class for faster test runs); integration tests for
+both `UserController` and `FarmController`.
 
 **Concepts:** relational modeling & normalization, SQL fundamentals, Spring
 Data JPA / Hibernate mapping (entities, relationships, value objects via
