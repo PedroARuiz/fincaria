@@ -1,0 +1,128 @@
+package com.fincaria.farms.infrastructure.`in`.web
+
+import com.fincaria.PostgreSQLTestContainer
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.assertj.MockMvcTester
+import org.springframework.web.context.WebApplicationContext
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
+import java.util.UUID
+
+@SpringBootTest
+class FarmControllerTest(
+    @Autowired context: WebApplicationContext,
+) : PostgreSQLTestContainer() {
+    private val mockMvc = MockMvcTester.from(context)
+
+    @Test
+    fun `creating a farm with valid data returns 201 with the created farm`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"7837301VG8173B0001TT","cropType":"OLIVE"}""")
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(201)
+    }
+
+    @Test
+    fun `creating a farm with an invalid cadastral reference returns 400`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"7837301VG8173B0001T","cropType":"OLIVE"}""")
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+    }
+
+    @Test
+    fun `creating a farm with a cadastral reference already in use returns 409`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"4A08169P03PRAT0001LR","cropType":"OLIVE"}""")
+            .let {
+                it.exchange()
+                it.exchange()
+            }
+
+        assertThat(result)
+            .hasStatus(409)
+    }
+
+    @Test
+    fun `listing farms for a user returns 200 with the user's farms`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"1234567AB1234C0002PD","cropType":"OLIVE"}""")
+            .exchange()
+
+        val result = mockMvc.get().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(200)
+            .bodyJson()
+            .extractingPath("$")
+            .asArray()
+            .hasSize(1)
+    }
+
+    @Test
+    fun `listing farms for a user with no farms returns 200 with an empty list`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.get().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(200)
+            .bodyJson()
+            .extractingPath("$")
+            .asArray()
+            .hasSize(0)
+    }
+}
