@@ -1,7 +1,10 @@
 services:
   db:
-    image: postgis/postgis:latest
-    platform: linux/amd64
+    # Plain postgres for now (no migration uses PostGIS geometry yet) — it ships
+    # a native arm64 image, unlike postgis/postgis, avoiding slow amd64
+    # emulation on Apple Silicon. Switch back to postgis/postgis once a
+    # migration actually needs geometry types.
+    image: postgres:18
     environment:
       POSTGRES_USER: fincaria_local_user
       POSTGRES_PASSWORD: fincaria_local_pwd
