@@ -27,7 +27,7 @@ tracked purely by milestone and its dependencies.
 | 0 | Environment & project baseline | Tooling, repo hygiene, domain framing | ✅ Done |
 | 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ✅ Done |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ✅ Done |
-| 3 | Testing strategy | Unit, integration, test pyramid, coverage | ⬜ Not started |
+| 3 | Testing strategy | Unit, integration, test pyramid, coverage | ✅ Done |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ⬜ Not started |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ⬜ Not started |
 | 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ⬜ Not started |
@@ -143,7 +143,25 @@ real Postgres/PostGIS container in tests and in local docker-compose.
 
 ---
 
-## Milestone 3 — Testing strategy
+## Milestone 3 — Testing strategy ✅ Done
+
+**Completed:** unit tests with MockK for every use case service
+(`CreateUserServiceTest`, `CreateFarmServiceTest`, `GetUserFarmsServiceTest`);
+integration tests per controller covering success and domain error paths
+(`UserControllerTest`, `FarmControllerTest`: 201/200, 400 validation, 409
+conflict, and a data-integrity-violation 400 case); JaCoCo wired into the
+Gradle build with an 85% minimum threshold enforced locally via
+`./gradlew check` (CI enforcement deferred to Milestone 9); the
+"a farm must have at least one crop type" rule built test-first
+(`FarmTest`, `Farm.cropTypes: Set<CropType>` non-empty invariant), cascaded
+through the command/service/persistence (`farm_crop_types` table)/DTOs/
+controller layers. Also fixed a real Testcontainers bug found along the
+way: `PostgreSQLTestContainer`'s shared container was being stopped and
+recreated between test classes because of `@Container`'s per-class
+lifecycle; it's now a true JVM-wide singleton started once in the
+companion object's `init` block, which also surfaced and let us drop the
+unnecessary PostGIS/amd64-emulation dependency in favor of plain
+`postgres` (no migration uses geometry yet).
 
 **Concepts:** test pyramid (unit vs. integration vs. end-to-end), JUnit 5,
 MockK for idiomatic Kotlin mocking, `MockMvc`/`WebTestClient` for
