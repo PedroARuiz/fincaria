@@ -17,7 +17,7 @@ class UserControllerTest(
 
     @Test
     fun `creating a user with valid data returns 201 with the created user`() {
-        val result = mockMvc.post().uri("/api/users")
+        val result = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""{"name":"Pedro","email":"pedro@example.com"}""")
             .exchange()
@@ -30,7 +30,7 @@ class UserControllerTest(
 
     @Test
     fun `creating a user with invalid data returns 400 with the validation error`() {
-        val result = mockMvc.post().uri("/api/users")
+        val result = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""{"name":" ","email":"pedro2@example.com"}""")
             .exchange()
@@ -43,7 +43,7 @@ class UserControllerTest(
 
     @Test
     fun `creating a user with an email already in use returns 409 with the conflict error`() {
-        val requestBuilder = mockMvc.post().uri("/api/users")
+        val requestBuilder = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
             .content("""{"name":"Pedro","email":"pedro3@example.com"}""")
         requestBuilder.exchange()

@@ -19,7 +19,7 @@ class FarmController(
     private val createFarmUseCase: CreateFarmUseCase,
     private val getUserFarmsUseCase: GetUserFarmsUseCase,
 ) {
-    @PostMapping("/api/users/{userId}/farms")
+    @PostMapping("/api/v1/users/{userId}/farms")
     fun createFarm(
         @PathVariable userId: String,
         @Valid @RequestBody request: CreateFarmRequest,
@@ -39,7 +39,7 @@ class FarmController(
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    @GetMapping("/api/users/{userId}/farms")
+    @GetMapping("/api/v1/users/{userId}/farms")
     fun getUserFarms(@PathVariable userId: String): ResponseEntity<List<FarmResponse>> {
         val farms = getUserFarmsUseCase(userId = userId)
         val response = farms.map { farm ->
