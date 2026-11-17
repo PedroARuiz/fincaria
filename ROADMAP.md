@@ -28,7 +28,7 @@ tracked purely by milestone and its dependencies.
 | 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ✅ Done |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ✅ Done |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ✅ Done |
-| 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ⬜ Not started |
+| 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | 🚧 In progress |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ⬜ Not started |
 | 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ⬜ Not started |
 | 7 | Caching & performance | Redis, query optimization, load testing | ⬜ Not started |
@@ -183,7 +183,7 @@ visible coverage report; CI fails the build below the threshold.
 
 ---
 
-## Milestone 4 — API design & documentation
+## Milestone 4 — API design & documentation 🚧 In progress
 
 **Concepts:** REST resource design, pagination/filtering/sorting,
 idempotency, API versioning strategies, HTTP semantics (status codes,
