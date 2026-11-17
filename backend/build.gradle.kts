@@ -23,6 +23,7 @@ dependencies {
     runtimeOnly(libs.postgresql)
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation(libs.mockk)
     testImplementation(libs.spring.boot.testcontainers)
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
