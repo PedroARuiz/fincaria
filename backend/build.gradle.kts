@@ -1,8 +1,11 @@
+import org.gradle.testing.jacoco.tasks.JacocoReportBase
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.plugin.spring)
     alias(libs.plugins.kotlin.plugin.jpa)
     alias(libs.plugins.spring.boot)
+    jacoco
 }
 
 repositories {
@@ -43,4 +46,27 @@ springBoot {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+val jacocoCoverageExclusions = listOf("**/FincariaApplication*")
+
+tasks.withType<JacocoReportBase>().configureEach {
+    classDirectories.setFrom(
+        classDirectories.files.map { fileTree(it) { exclude(jacocoCoverageExclusions) } }
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.85".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
