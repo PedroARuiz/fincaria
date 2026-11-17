@@ -15,14 +15,14 @@ class FarmRepositoryImpl(
             id = UUID.fromString(farm.id),
             userId = UUID.fromString(farm.userId),
             cadastralReference = farm.cadastralReference.value,
-            cropType = farm.cropType,
+            cropTypes = farm.cropTypes.toMutableSet(),
         )
         val saved = farmJpaRepository.save(entity)
         return Farm(
             id = saved.id.toString(),
             userId = saved.userId.toString(),
             cadastralReference = CadastralReference(saved.cadastralReference),
-            cropType = saved.cropType,
+            cropTypes = saved.cropTypes.toSet(),
         )
     }
 
@@ -35,7 +35,7 @@ class FarmRepositoryImpl(
                 id = farmJpaEntity.id.toString(),
                 userId = farmJpaEntity.userId.toString(),
                 cadastralReference = CadastralReference(farmJpaEntity.cadastralReference),
-                cropType = farmJpaEntity.cropType,
+                cropTypes = farmJpaEntity.cropTypes.toSet(),
             )
         }
 }

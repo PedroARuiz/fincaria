@@ -1,11 +1,14 @@
 package com.fincaria.farms.infrastructure.out.persistence
 
 import com.fincaria.farms.domain.CropType
+import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
+import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.Table
 import java.util.UUID
 
@@ -18,7 +21,12 @@ class FarmJpaEntity(
     var userId: UUID,
     @Column(nullable = false, unique = true, length = 20)
     var cadastralReference: String,
+    @ElementCollection(targetClass = CropType::class)
+    @CollectionTable(
+        name = "farm_crop_types",
+        joinColumns = [JoinColumn(name = "farm_id")],
+    )
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    var cropType: CropType,
+    @Column(name = "crop_type", nullable = false, length = 50)
+    var cropTypes: MutableSet<CropType>,
 )

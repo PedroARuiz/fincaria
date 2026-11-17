@@ -21,7 +21,7 @@ class CreateFarmService(
                     id = UUID.randomUUID().toString(),
                     userId = command.userId,
                     cadastralReference = command.cadastralReference,
-                    cropType = command.cropType,
+                    cropTypes = command.cropTypes,
                 )
             )
         }

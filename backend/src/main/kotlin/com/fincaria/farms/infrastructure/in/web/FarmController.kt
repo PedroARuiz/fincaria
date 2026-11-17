@@ -27,14 +27,14 @@ class FarmController(
         val command = CreateFarmCommand(
             userId = userId,
             cadastralReference = CadastralReference(request.cadastralReference),
-            cropType = CropType.valueOf(request.cropType),
+            cropTypes = request.cropTypes.map { CropType.valueOf(it) }.toSet(),
         )
         val farm = createFarmUseCase(command)
         val response = FarmResponse(
             id = farm.id,
             userId = farm.userId,
             cadastralReference = farm.cadastralReference.value,
-            cropType = farm.cropType.name,
+            cropTypes = farm.cropTypes.map { it.name }.toSet(),
         )
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
@@ -47,7 +47,7 @@ class FarmController(
                 id = farm.id,
                 userId = farm.userId,
                 cadastralReference = farm.cadastralReference.value,
-                cropType = farm.cropType.name,
+                cropTypes = farm.cropTypes.map { it.name }.toSet(),
             )
         }
         return ResponseEntity.status(HttpStatus.OK).body(response)

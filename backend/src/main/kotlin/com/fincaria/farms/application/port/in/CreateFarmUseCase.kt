@@ -7,7 +7,7 @@ import com.fincaria.farms.domain.Farm
 data class CreateFarmCommand(
     val userId: String,
     val cadastralReference: CadastralReference,
-    val cropType: CropType,
+    val cropTypes: Set<CropType>,
 )
 
 interface CreateFarmUseCase {

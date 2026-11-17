@@ -22,7 +22,7 @@ class GetUserFarmsServiceTest {
                 id = UUID.randomUUID().toString(),
                 userId = userId,
                 cadastralReference = CadastralReference("7837301VG8173B0001TT"),
-                cropType = CropType.OLIVE,
+                cropTypes = setOf(CropType.OLIVE),
             )
         )
         every { farmRepository.getUserFarms(userId) } returns expectedFarms

@@ -44,12 +44,22 @@ class CreateFarmServiceTest {
         verify(exactly = 0) { farmRepository.save(any()) }
     }
 
+    @Test
+    fun `creating a farm with no crop types throws IllegalArgumentException and does not save`() {
+        val commandWithNoCropTypes = command.copy(cropTypes = emptySet())
+
+        assertThrows<IllegalArgumentException> {
+            service(command = commandWithNoCropTypes)
+        }
+        verify(exactly = 0) { farmRepository.save(any()) }
+    }
+
     companion object {
         val cadastralReference = CadastralReference("7837301VG8173B0001TT")
         val command = CreateFarmCommand(
             userId = UUID.randomUUID().toString(),
             cadastralReference = cadastralReference,
-            cropType = CropType.OLIVE,
+            cropTypes = setOf(CropType.OLIVE),
         )
     }
 }

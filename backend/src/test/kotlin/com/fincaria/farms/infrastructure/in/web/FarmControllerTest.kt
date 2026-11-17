@@ -29,7 +29,7 @@ class FarmControllerTest(
 
         val result = mockMvc.post().uri("/api/users/$userId/farms")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"cadastralReference":"7837301VG8173B0001TT","cropType":"OLIVE"}""")
+            .content("""{"cadastralReference":"7837301VG8173B0001TT","cropTypes":["OLIVE"]}""")
             .exchange()
 
         assertThat(result)
@@ -48,7 +48,7 @@ class FarmControllerTest(
 
         val result = mockMvc.post().uri("/api/users/$userId/farms")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"cadastralReference":"7837301VG8173B0001T","cropType":"OLIVE"}""")
+            .content("""{"cadastralReference":"7837301VG8173B0001T","cropTypes":["OLIVE"]}""")
             .exchange()
 
         assertThat(result)
@@ -67,7 +67,7 @@ class FarmControllerTest(
 
         val result = mockMvc.post().uri("/api/users/$userId/farms")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"cadastralReference":"4A08169P03PRAT0001LR","cropType":"OLIVE"}""")
+            .content("""{"cadastralReference":"4A08169P03PRAT0001LR","cropTypes":["OLIVE"]}""")
             .let {
                 it.exchange()
                 it.exchange()
@@ -89,7 +89,7 @@ class FarmControllerTest(
 
         mockMvc.post().uri("/api/users/$userId/farms")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"cadastralReference":"1234567AB1234C0002PD","cropType":"OLIVE"}""")
+            .content("""{"cadastralReference":"1234567AB1234C0002PD","cropTypes":["OLIVE"]}""")
             .exchange()
 
         val result = mockMvc.get().uri("/api/users/$userId/farms")
@@ -110,7 +110,26 @@ class FarmControllerTest(
 
         val result = mockMvc.post().uri("/api/users/$userId/farms")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"cadastralReference":"9999999ZZ9999Z0004SA","cropType":"OLIVE"}""")
+            .content("""{"cadastralReference":"9999999ZZ9999Z0004SA","cropTypes":["OLIVE"]}""")
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+    }
+
+    @Test
+    fun `creating a farm with no crop types returns 400`() {
+        val userId = mockMvc.post().uri("/api/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"9637302VG8173B0003SU","cropTypes":[]}""")
             .exchange()
 
         assertThat(result)
