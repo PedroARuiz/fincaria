@@ -105,6 +105,19 @@ class FarmControllerTest(
     }
 
     @Test
+    fun `creating a farm for a user that does not exist returns 400`() {
+        val userId = UUID.randomUUID().toString()
+
+        val result = mockMvc.post().uri("/api/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"9999999ZZ9999Z0004SA","cropType":"OLIVE"}""")
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+    }
+
+    @Test
     fun `listing farms for a user with no farms returns 200 with an empty list`() {
         val userId = mockMvc.post().uri("/api/users")
             .contentType(MediaType.APPLICATION_JSON)
