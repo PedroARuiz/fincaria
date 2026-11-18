@@ -31,4 +31,20 @@ class GetUserFarmsServiceTest {
 
         assertEquals(expectedFarms, farms)
     }
+
+    @Test
+    fun `getting farms for a user filtered by crop type returns only matching farms`() {
+        val userId = UUID.randomUUID().toString()
+        val matchingFarm = Farm(
+            id = UUID.randomUUID().toString(),
+            userId = userId,
+            cadastralReference = CadastralReference("7837301VG8173B0001TT"),
+            cropTypes = setOf(CropType.OLIVE),
+        )
+        every { farmRepository.getUserFarms(userId) } returns listOf(matchingFarm)
+
+        val farms = service(userId = userId, cropType = CropType.OLIVE)
+
+        assertEquals(listOf(matchingFarm), farms)
+    }
 }

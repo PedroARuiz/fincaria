@@ -137,6 +137,51 @@ class FarmControllerTest(
     }
 
     @Test
+    fun `listing farms for a user filtered by an existing crop type returns 200 with matching farms`() {
+        val userId = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        mockMvc.post().uri("/api/v1/users/$userId/farms")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"cadastralReference":"2234567AB1234C0005EH","cropTypes":["OLIVE"]}""")
+            .exchange()
+
+        val result = mockMvc.get().uri("/api/v1/users/$userId/farms?cropType=OLIVE")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(200)
+            .bodyJson()
+            .extractingPath("$")
+            .asArray()
+            .hasSize(1)
+    }
+
+    @Test
+    fun `listing farms for a user filtered by an invalid crop type returns 400`() {
+        val userId = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.get().uri("/api/v1/users/$userId/farms?cropType=INVALID")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+    }
+
+    @Test
     fun `listing farms for a user with no farms returns 200 with an empty list`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
