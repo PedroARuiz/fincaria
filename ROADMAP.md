@@ -28,7 +28,7 @@ tracked purely by milestone and its dependencies.
 | 1 | Spring Boot & hexagonal foundations | DI, ports & adapters, first vertical slice | ✅ Done |
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ✅ Done |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ✅ Done |
-| 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | 🚧 In progress |
+| 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ✅ Done |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ⬜ Not started |
 | 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ⬜ Not started |
 | 7 | Caching & performance | Redis, query optimization, load testing | ⬜ Not started |
@@ -183,7 +183,18 @@ visible coverage report; CI fails the build below the threshold.
 
 ---
 
-## Milestone 4 — API design & documentation 🚧 In progress
+## Milestone 4 — API design & documentation ✅ Done
+
+**Completed:** ADR-0005 decided URI versioning (`/api/v1/...`) and applied
+it retroactively to every existing endpoint; `springdoc-openapi` wired in,
+serving the OpenAPI spec and Swagger UI with zero changes to the
+controllers; `GET /api/v1/users/{userId}/farms` gained an optional
+`cropType` query filter (in memory for now, deferred to Milestone 7) and
+pagination/sorting backed by framework-agnostic `PageRequest`/`PagedResult`
+types in `shared.application`, with mappers bridging them to Spring's
+`Pageable`/`Page<T>` only at the infrastructure boundary (the persistence
+one unused so far, ready for the first endpoint that paginates directly
+against the database).
 
 **Concepts:** REST resource design, pagination/filtering/sorting,
 idempotency, API versioning strategies, HTTP semantics (status codes,
