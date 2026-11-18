@@ -99,7 +99,7 @@ class FarmControllerTest(
         assertThat(result)
             .hasStatus(200)
             .bodyJson()
-            .extractingPath("$")
+            .extractingPath("$.content")
             .asArray()
             .hasSize(1)
     }
@@ -158,7 +158,7 @@ class FarmControllerTest(
         assertThat(result)
             .hasStatus(200)
             .bodyJson()
-            .extractingPath("$")
+            .extractingPath("$.content")
             .asArray()
             .hasSize(1)
     }
@@ -174,6 +174,85 @@ class FarmControllerTest(
             }
 
         val result = mockMvc.get().uri("/api/v1/users/$userId/farms?cropType=INVALID")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+    }
+
+    @Test
+    fun `listing farms for a user paginates the results`() {
+        val userId = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        listOf("1111167AB1234C0010FK", "2222267AB1234C0011KL", "3333367AB1234C0012XB").forEach { reference ->
+            mockMvc.post().uri("/api/v1/users/$userId/farms")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"cadastralReference":"$reference","cropTypes":["OLIVE"]}""")
+                .exchange()
+        }
+
+        val result = mockMvc.get().uri("/api/v1/users/$userId/farms?page=0&size=2")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(200)
+            .bodyJson()
+            .extractingPath("$.content").asArray().hasSize(2)
+        assertThat(result)
+            .bodyJson()
+            .extractingPath("$.totalElements").isEqualTo(3)
+        assertThat(result)
+            .bodyJson()
+            .extractingPath("$.totalPages").isEqualTo(2)
+    }
+
+    @Test
+    fun `listing farms for a user sorted by cadastral reference descending returns them in that order`() {
+        val userId = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        listOf("4444467AB1234C0013EZ", "5555567AB1234C0014UX").forEach { reference ->
+            mockMvc.post().uri("/api/v1/users/$userId/farms")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""{"cadastralReference":"$reference","cropTypes":["OLIVE"]}""")
+                .exchange()
+        }
+
+        val result = mockMvc.get().uri("/api/v1/users/$userId/farms?sort=cadastralReference,desc")
+            .contentType(MediaType.APPLICATION_JSON)
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(200)
+            .bodyJson()
+            .extractingPath("$.content[0].cadastralReference")
+            .isEqualTo("5555567AB1234C0014UX")
+    }
+
+    @Test
+    fun `listing farms for a user with an unsupported sort field returns 400`() {
+        val userId = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .exchange()
+            .let { userResult ->
+                ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
+            }
+
+        val result = mockMvc.get().uri("/api/v1/users/$userId/farms?sort=unknown,asc")
             .contentType(MediaType.APPLICATION_JSON)
             .exchange()
 
@@ -198,7 +277,7 @@ class FarmControllerTest(
         assertThat(result)
             .hasStatus(200)
             .bodyJson()
-            .extractingPath("$")
+            .extractingPath("$.content")
             .asArray()
             .hasSize(0)
     }

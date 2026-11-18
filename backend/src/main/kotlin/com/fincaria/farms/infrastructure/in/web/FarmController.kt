@@ -5,7 +5,12 @@ import com.fincaria.farms.application.port.`in`.CreateFarmUseCase
 import com.fincaria.farms.application.port.`in`.GetUserFarmsUseCase
 import com.fincaria.farms.domain.CadastralReference
 import com.fincaria.farms.domain.CropType
+import com.fincaria.shared.infrastructure.`in`.web.PagedResponse
+import com.fincaria.shared.infrastructure.`in`.web.toPageRequest
+import com.fincaria.shared.infrastructure.`in`.web.toResponse
 import jakarta.validation.Valid
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -44,12 +49,14 @@ class FarmController(
     fun getUserFarms(
         @PathVariable userId: String,
         @RequestParam(required = false) cropType: String?,
-    ): ResponseEntity<List<FarmResponse>> {
-        val farms = getUserFarmsUseCase(
+        @PageableDefault(size = 20) pageable: Pageable,
+    ): ResponseEntity<PagedResponse<FarmResponse>> {
+        val pagedFarms = getUserFarmsUseCase(
             userId = userId,
             cropType = cropType?.let { CropType.valueOf(it) },
+            pageRequest = pageable.toPageRequest(),
         )
-        val response = farms.map { farm ->
+        val response = pagedFarms.toResponse { farm ->
             FarmResponse(
                 id = farm.id,
                 userId = farm.userId,
