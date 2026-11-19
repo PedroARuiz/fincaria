@@ -382,3 +382,18 @@ technical interviews.
 **Definition of done:** the repo is presentable as a portfolio piece; every
 architectural decision can be justified from first principles, not just
 "because the roadmap said so".
+
+---
+
+## Future improvements backlog
+
+Ideas worth doing eventually but not tied to a specific milestone — picked up
+opportunistically when there's a natural fit, or batched into a milestone
+later if they grow into a real theme.
+
+- **Check new passwords against known-breached password lists** instead of
+  (or in addition to) composition rules, per current NIST SP 800-63B /
+  OWASP guidance — e.g. the HaveIBeenPwned Pwned Passwords API via its
+  k-anonymity endpoint (sends only the first 5 chars of the password's
+  SHA-1 hash, never the password or full hash), or a local list of the most
+  common leaked passwords as a simpler offline alternative.
