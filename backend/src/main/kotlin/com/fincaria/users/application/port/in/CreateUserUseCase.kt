@@ -5,6 +5,7 @@ import com.fincaria.users.domain.User
 data class CreateUserCommand(
     val name: String,
     val email: String,
+    val password: String,
 )
 
 interface CreateUserUseCase {

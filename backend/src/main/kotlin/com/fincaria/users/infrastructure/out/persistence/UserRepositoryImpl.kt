@@ -14,9 +14,10 @@ class UserRepositoryImpl(
             id = UUID.fromString(user.id),
             name = user.name,
             email = user.email,
+            passwordHash = user.passwordHash,
         )
         val saved = userJpaRepository.save(entity)
-        return User(id = saved.id.toString(), name = saved.name, email = saved.email)
+        return User(id = saved.id.toString(), name = saved.name, email = saved.email, passwordHash = saved.passwordHash)
     }
 
     override fun existsByEmail(email: String): Boolean =

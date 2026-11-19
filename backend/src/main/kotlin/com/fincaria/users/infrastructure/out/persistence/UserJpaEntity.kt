@@ -15,4 +15,6 @@ class UserJpaEntity(
     var name: String,
     @Column(nullable = false, unique = true, length = 254)
     var email: String,
+    @Column(name = "password_hash", nullable = false)
+    var passwordHash: String,
 )

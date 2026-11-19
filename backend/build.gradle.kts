@@ -20,6 +20,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation(libs.spring.security.crypto)
     implementation(libs.spring.boot.flyway)
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)

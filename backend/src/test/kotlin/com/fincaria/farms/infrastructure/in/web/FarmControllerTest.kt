@@ -21,7 +21,7 @@ class FarmControllerTest(
     fun `creating a farm with valid data returns 201 with the created farm`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -40,7 +40,7 @@ class FarmControllerTest(
     fun `creating a farm with an invalid cadastral reference returns 400`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -59,7 +59,7 @@ class FarmControllerTest(
     fun `creating a farm with a cadastral reference already in use returns 409`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -81,7 +81,7 @@ class FarmControllerTest(
     fun `listing farms for a user returns 200 with the user's farms`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -121,7 +121,7 @@ class FarmControllerTest(
     fun `creating a farm with no crop types returns 400`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -140,7 +140,7 @@ class FarmControllerTest(
     fun `listing farms for a user filtered by an existing crop type returns 200 with matching farms`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -167,7 +167,7 @@ class FarmControllerTest(
     fun `listing farms for a user filtered by an invalid crop type returns 400`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -185,7 +185,7 @@ class FarmControllerTest(
     fun `listing farms for a user paginates the results`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -218,7 +218,7 @@ class FarmControllerTest(
     fun `listing farms for a user sorted by cadastral reference descending returns them in that order`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -246,7 +246,7 @@ class FarmControllerTest(
     fun `listing farms for a user with an unsupported sort field returns 400`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()
@@ -264,7 +264,7 @@ class FarmControllerTest(
     fun `listing farms for a user with no farms returns 200 with an empty list`() {
         val userId = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro-${UUID.randomUUID()}@example.com","password":"super-secret"}""")
             .exchange()
             .let { userResult ->
                 ObjectMapper().readTree(userResult.response.contentAsString).get("id").asText()

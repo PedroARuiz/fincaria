@@ -19,20 +19,21 @@ class UserControllerTest(
     fun `creating a user with valid data returns 201 with the created user`() {
         val result = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro@example.com","password":"super-secret"}""")
             .exchange()
 
         assertThat(result)
             .hasStatus(201)
             .bodyJson()
             .extractingPath("$.name").isEqualTo("Pedro")
+        assertThat(result.response.contentAsString).doesNotContain("password")
     }
 
     @Test
     fun `creating a user with invalid data returns 400 with the validation error`() {
         val result = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":" ","email":"pedro2@example.com"}""")
+            .content("""{"name":" ","email":"pedro2@example.com","password":"super-secret"}""")
             .exchange()
 
         assertThat(result)
@@ -42,10 +43,23 @@ class UserControllerTest(
     }
 
     @Test
+    fun `creating a user with a password shorter than 8 characters returns 400 with the validation error`() {
+        val result = mockMvc.post().uri("/api/v1/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("""{"name":"Pedro","email":"pedro4@example.com","password":"short"}""")
+            .exchange()
+
+        assertThat(result)
+            .hasStatus(400)
+            .bodyJson()
+            .extractingPath("$.message").isEqualTo("password: size must be between 8 and 72")
+    }
+
+    @Test
     fun `creating a user with an email already in use returns 409 with the conflict error`() {
         val requestBuilder = mockMvc.post().uri("/api/v1/users")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("""{"name":"Pedro","email":"pedro3@example.com"}""")
+            .content("""{"name":"Pedro","email":"pedro3@example.com","password":"super-secret"}""")
         requestBuilder.exchange()
 
         val result = requestBuilder
