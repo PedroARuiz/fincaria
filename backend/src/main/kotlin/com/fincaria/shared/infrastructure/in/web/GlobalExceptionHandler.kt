@@ -1,5 +1,6 @@
 package com.fincaria.shared.infrastructure.`in`.web
 
+import com.fincaria.auth.domain.exception.InvalidCredentialsException
 import com.fincaria.farms.domain.exception.DuplicatedCadastralReferenceException
 import com.fincaria.users.domain.exception.EmailAlreadyInUseException
 import org.springframework.dao.DataIntegrityViolationException
@@ -51,6 +52,16 @@ class GlobalExceptionHandler {
             message = ex.message ?: "Cadastral reference already in use",
         )
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error)
+    }
+
+    @ExceptionHandler(InvalidCredentialsException::class)
+    fun handleInvalidCredentials(ex: InvalidCredentialsException): ResponseEntity<ErrorResponse> {
+        val error = ErrorResponse(
+            status = HttpStatus.UNAUTHORIZED.value(),
+            error = "Unauthorized",
+            message = ex.message ?: "Invalid credentials",
+        )
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error)
     }
 
     @ExceptionHandler(DataIntegrityViolationException::class)

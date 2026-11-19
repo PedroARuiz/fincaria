@@ -9,3 +9,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+fincaria:
+  jwt:
+    # Dev-only fallback so local runs/tests work with zero setup. Any real
+    # environment MUST override this via the JWT_SECRET env var — never
+    # commit a real secret here.
+    secret: ${JWT_SECRET:dev-only-insecure-jwt-secret-change-me-before-any-real-deploy}
+    expiration-seconds: 3600

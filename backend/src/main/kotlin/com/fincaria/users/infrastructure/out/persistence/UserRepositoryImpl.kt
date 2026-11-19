@@ -22,4 +22,9 @@ class UserRepositoryImpl(
 
     override fun existsByEmail(email: String): Boolean =
         userJpaRepository.existsByEmail(email)
+
+    override fun findByEmail(email: String): User? =
+        userJpaRepository.findByEmail(email)?.let {
+            User(id = it.id.toString(), name = it.name, email = it.email, passwordHash = it.passwordHash)
+        }
 }

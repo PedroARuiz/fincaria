@@ -397,3 +397,14 @@ later if they grow into a real theme.
   k-anonymity endpoint (sends only the first 5 chars of the password's
   SHA-1 hash, never the password or full hash), or a local list of the most
   common leaked passwords as a simpler offline alternative.
+
+- **Add refresh token rotation.** Milestone 5 issues only a short-lived
+  access token (no refresh flow) to keep the first JWT implementation
+  simple. Revisit once re-login-on-expiry becomes annoying in practice:
+  a rotated refresh token lets the access token stay short-lived without
+  forcing the user to log in again constantly.
+
+- **Rate limit login attempts.** `POST /api/v1/auth/login` has no
+  brute-force/credential-stuffing protection yet. Likely a natural fit
+  for Milestone 6's resilience patterns (Resilience4j) rather than a
+  bespoke mechanism here.
