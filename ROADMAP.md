@@ -29,7 +29,7 @@ tracked purely by milestone and its dependencies.
 | 2 | Persistence & data modeling | Relational modeling, JPA, migrations | ✅ Done |
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ✅ Done |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ✅ Done |
-| 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ⬜ Not started |
+| 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ✅ Done |
 | 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ⬜ Not started |
 | 7 | Caching & performance | Redis, query optimization, load testing | ⬜ Not started |
 | 8 | Messaging & event-driven architecture | Kafka/RabbitMQ, domain events, outbox | ⬜ Not started |
@@ -215,7 +215,27 @@ pagination/filtering is covered by integration tests.
 
 ---
 
-## Milestone 5 — Security
+## Milestone 5 — Security ✅ Done
+
+**Completed:** `BCryptPasswordHasher` (behind a `PasswordHasher` port) hashes
+passwords on registration (`V4` migration adds `password_hash`, validated
+8–72 chars); a new `auth` bounded context (`LoginUseCase`/`LoginService`)
+verifies credentials and issues a JWT via `JjwtTokenIssuer` (jjwt, HS384
+pinned explicitly, 1h expiry, no refresh token yet — tracked as a backlog
+item); `spring-boot-starter-security` wires a stateless `SecurityFilterChain`
+with a `JwtAuthenticationFilter` (backed by a symmetric `TokenParser` port)
+requiring `fullyAuthenticated()` on every endpoint except registration,
+login, Swagger and `/actuator/health`, with `RestAuthenticationEntryPoint`/
+`RestAccessDeniedHandler` matching the existing `ErrorResponse` shape;
+`GET`/`POST /api/v1/users/{userId}/farms` became `/api/v1/farms`, with the
+`userId` sourced from the authenticated principal instead of a path
+variable — closing the ownership requirement by construction rather than
+with an explicit `@PreAuthorize` comparison, since there's no longer a
+parameter where a caller could express another user's id; Swagger
+documents the `bearerAuth` scheme on every protected operation via a
+`GlobalOperationCustomizer`. ADR-0006 documents the hand-rolled JWT vs.
+OAuth2/OIDC decision; the optional Keycloak stretch was deliberately
+skipped for this pass.
 
 **Concepts:** authentication vs. authorization, session-based vs.
 token-based auth, Spring Security filter chain, password hashing, JWT

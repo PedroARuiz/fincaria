@@ -21,7 +21,7 @@ None of these have been implemented yet; they describe the long-term direction o
 
 ## Project status
 
-Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–4 are complete: a hexagonal Spring Boot service with `users` and `farms` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), and a versioned, documented REST API. See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
+Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–5 are complete: a hexagonal Spring Boot service with `users`, `farms`, and `auth` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), a versioned, documented REST API, and JWT-based authentication protecting every endpoint except registration and login. See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
 
 ## Running locally
 
@@ -42,13 +42,13 @@ integration tests, and a JaCoCo coverage check).
 - **Persistence:** PostgreSQL, Spring Data JPA / Hibernate, Flyway
 - **Testing:** JUnit 5, MockK, Testcontainers, JaCoCo
 - **API:** springdoc-openapi (OpenAPI/Swagger), URI versioning
+- **Security:** Spring Security, JWT (jjwt), BCrypt password hashing
 
 ### Planned
 
 Each item maps to a milestone in [ROADMAP.md](./ROADMAP.md):
 
 - **Geospatial data:** PostGIS, once a migration actually needs geometry (follow-up to Milestone 2)
-- **Security:** Spring Security, JWT, OAuth2/OIDC — Milestone 5
 - **Observability & resilience:** Micrometer, Prometheus, Grafana, OpenTelemetry, Resilience4j — Milestone 6
 - **Caching:** Redis — Milestone 7
 - **Messaging:** Kafka or RabbitMQ — Milestone 8
