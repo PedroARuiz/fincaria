@@ -13,8 +13,8 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -25,13 +25,13 @@ class FarmController(
     private val createFarmUseCase: CreateFarmUseCase,
     private val getUserFarmsUseCase: GetUserFarmsUseCase,
 ) {
-    @PostMapping("/api/v1/users/{userId}/farms")
+    @PostMapping("/api/v1/farms")
     fun createFarm(
-        @PathVariable userId: String,
+        authentication: Authentication,
         @Valid @RequestBody request: CreateFarmRequest,
     ): ResponseEntity<FarmResponse> {
         val command = CreateFarmCommand(
-            userId = userId,
+            userId = authentication.name,
             cadastralReference = CadastralReference(request.cadastralReference),
             cropTypes = request.cropTypes.map { CropType.valueOf(it) }.toSet(),
         )
@@ -45,14 +45,14 @@ class FarmController(
         return ResponseEntity.status(HttpStatus.CREATED).body(response)
     }
 
-    @GetMapping("/api/v1/users/{userId}/farms")
+    @GetMapping("/api/v1/farms")
     fun getUserFarms(
-        @PathVariable userId: String,
+        authentication: Authentication,
         @RequestParam(required = false) cropType: String?,
         @PageableDefault(size = 20) pageable: Pageable,
     ): ResponseEntity<PagedResponse<FarmResponse>> {
         val pagedFarms = getUserFarmsUseCase(
-            userId = userId,
+            userId = authentication.name,
             cropType = cropType?.let { CropType.valueOf(it) },
             pageRequest = pageable.toPageRequest(),
         )
