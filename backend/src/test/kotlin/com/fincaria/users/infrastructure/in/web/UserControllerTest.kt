@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
 import org.springframework.test.web.servlet.assertj.MockMvcTester
 import org.springframework.web.context.WebApplicationContext
 
@@ -13,7 +15,7 @@ import org.springframework.web.context.WebApplicationContext
 class UserControllerTest(
     @Autowired context: WebApplicationContext,
 ) : PostgreSQLTestContainer() {
-    private val mockMvc = MockMvcTester.from(context)
+    private val mockMvc = MockMvcTester.from(context) { it.apply<DefaultMockMvcBuilder>(springSecurity()); it.build() }
 
     @Test
     fun `creating a user with valid data returns 201 with the created user`() {

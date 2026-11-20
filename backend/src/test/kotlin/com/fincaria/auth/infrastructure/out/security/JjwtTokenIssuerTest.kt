@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test
 
 class JjwtTokenIssuerTest {
 
-    private val secret = "test-only-jwt-secret-at-least-32-bytes-long-xxxxxx"
-    private val issuer = JjwtTokenIssuer(secret = secret, expirationSeconds = 3600)
+    private val secret = "test-only-jwt-secret-at-least-48-bytes-long-xxxxxx"
+    private val issuer = JjwtTokenIssuer(signingKey = JwtSigningKey(secret), expirationSeconds = 3600)
 
     @Test
     fun `issuing a token sets the subject and an expiration matching the configured seconds`() {
@@ -30,7 +30,7 @@ class JjwtTokenIssuerTest {
     @Test
     fun `a token signed with a different secret fails verification`() {
         val issuedToken = issuer.issue("user-id")
-        val otherSecret = "another-test-jwt-secret-at-least-32-bytes-long-yyyy"
+        val otherSecret = "another-test-jwt-secret-at-least-48-bytes-long-yyyy"
 
         assertTrue(
             runCatching {

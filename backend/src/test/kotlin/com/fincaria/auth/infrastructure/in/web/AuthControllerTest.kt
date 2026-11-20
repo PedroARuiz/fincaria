@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity
 import org.springframework.test.web.servlet.assertj.MockMvcTester
 import org.springframework.web.context.WebApplicationContext
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper
@@ -15,7 +17,7 @@ import java.util.UUID
 class AuthControllerTest(
     @Autowired context: WebApplicationContext,
 ) : PostgreSQLTestContainer() {
-    private val mockMvc = MockMvcTester.from(context)
+    private val mockMvc = MockMvcTester.from(context) { it.apply<DefaultMockMvcBuilder>(springSecurity()); it.build() }
 
     private fun registerUser(email: String, password: String) {
         mockMvc.post().uri("/api/v1/users")
