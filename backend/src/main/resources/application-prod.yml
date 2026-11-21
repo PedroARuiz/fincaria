@@ -1,0 +1,7 @@
+logging:
+  structured:
+    format:
+      # Emit console logs as ECS (Elastic Common Schema) JSON so a log
+      # collector (Fluent Bit, Filebeat, Loki, ...) can index them by field.
+      # The default profile keeps human-readable plain text for local dev.
+      console: ecs

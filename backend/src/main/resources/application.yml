@@ -1,4 +1,7 @@
 spring:
+  application:
+    # Tags metrics and structured logs with the service name (ECS `service.name`).
+    name: fincaria
   web:
     locale: en
     locale-resolver: fixed
