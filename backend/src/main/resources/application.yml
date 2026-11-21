@@ -14,6 +14,12 @@ spring:
       ddl-auto: validate
 
 management:
+  endpoints:
+    web:
+      exposure:
+        # Expose only what we need over HTTP: health plus the Prometheus
+        # scrape endpoint (/actuator/prometheus).
+        include: health,prometheus
   tracing:
     sampling:
       # Trace every request so trace/span IDs always show up while developing.

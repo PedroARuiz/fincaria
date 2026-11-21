@@ -25,7 +25,7 @@ class SecurityConfig(
                 authorize.requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 authorize.requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                 authorize.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                authorize.requestMatchers("/actuator/health").permitAll()
+                authorize.requestMatchers("/actuator/health", "/actuator/prometheus").permitAll()
                 authorize.anyRequest().fullyAuthenticated()
             }
             .exceptionHandling { exceptions ->
