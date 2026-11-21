@@ -5,6 +5,7 @@ data class Farm(
     val userId: String,
     val cadastralReference: CadastralReference,
     val cropTypes: Set<CropType>,
+    val cadastralVerification: CadastralVerification,
 ) {
     init {
         require(cropTypes.isNotEmpty()) { "cropTypes must not be empty" }

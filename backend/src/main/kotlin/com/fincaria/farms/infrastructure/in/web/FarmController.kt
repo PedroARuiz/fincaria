@@ -4,7 +4,9 @@ import com.fincaria.farms.application.port.`in`.CreateFarmCommand
 import com.fincaria.farms.application.port.`in`.CreateFarmUseCase
 import com.fincaria.farms.application.port.`in`.GetUserFarmsUseCase
 import com.fincaria.farms.domain.CadastralReference
+import com.fincaria.farms.domain.CadastralVerification
 import com.fincaria.farms.domain.CropType
+import com.fincaria.farms.domain.Farm
 import com.fincaria.shared.infrastructure.`in`.web.PagedResponse
 import com.fincaria.shared.infrastructure.`in`.web.toPageRequest
 import com.fincaria.shared.infrastructure.`in`.web.toResponse
@@ -36,13 +38,7 @@ class FarmController(
             cropTypes = request.cropTypes.map { CropType.valueOf(it) }.toSet(),
         )
         val farm = createFarmUseCase(command)
-        val response = FarmResponse(
-            id = farm.id,
-            userId = farm.userId,
-            cadastralReference = farm.cadastralReference.value,
-            cropTypes = farm.cropTypes.map { it.name }.toSet(),
-        )
-        return ResponseEntity.status(HttpStatus.CREATED).body(response)
+        return ResponseEntity.status(HttpStatus.CREATED).body(farm.toResponse())
     }
 
     @GetMapping("/api/v1/farms")
@@ -56,14 +52,29 @@ class FarmController(
             cropType = cropType?.let { CropType.valueOf(it) },
             pageRequest = pageable.toPageRequest(),
         )
-        val response = pagedFarms.toResponse { farm ->
-            FarmResponse(
-                id = farm.id,
-                userId = farm.userId,
-                cadastralReference = farm.cadastralReference.value,
-                cropTypes = farm.cropTypes.map { it.name }.toSet(),
-            )
-        }
+        val response = pagedFarms.toResponse { farm -> farm.toResponse() }
         return ResponseEntity.status(HttpStatus.OK).body(response)
+    }
+
+    private fun Farm.toResponse(): FarmResponse {
+        val verification = cadastralVerification
+        return FarmResponse(
+            id = id,
+            userId = userId,
+            cadastralReference = cadastralReference.value,
+            cropTypes = cropTypes.map { it.name }.toSet(),
+            verificationStatus = when (verification) {
+                is CadastralVerification.Verified -> "VERIFIED"
+                CadastralVerification.Unverified -> "UNVERIFIED"
+            },
+            cadastralDetails = when (verification) {
+                is CadastralVerification.Verified -> CadastralDetailsResponse(
+                    municipality = verification.details.municipality,
+                    province = verification.details.province,
+                    areaHectares = verification.details.areaHectares,
+                )
+                CadastralVerification.Unverified -> null
+            },
+        )
     }
 }

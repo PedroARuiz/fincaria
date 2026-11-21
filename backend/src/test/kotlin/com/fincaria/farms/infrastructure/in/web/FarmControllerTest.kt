@@ -48,6 +48,14 @@ class FarmControllerTest(
 
         assertThat(result)
             .hasStatus(201)
+            .bodyJson()
+            .extractingPath("$.verificationStatus")
+            .isEqualTo("VERIFIED")
+        assertThat(result)
+            .bodyJson()
+            .extractingPath("$.cadastralDetails.municipality")
+            .asString()
+            .isNotEmpty()
     }
 
     @Test

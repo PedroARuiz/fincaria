@@ -2,6 +2,7 @@ package com.fincaria.farms.application.service
 
 import com.fincaria.farms.application.port.out.FarmRepository
 import com.fincaria.farms.domain.CadastralReference
+import com.fincaria.farms.domain.CadastralVerification
 import com.fincaria.farms.domain.CropType
 import com.fincaria.farms.domain.Farm
 import com.fincaria.shared.application.PageRequest
@@ -94,5 +95,6 @@ class GetUserFarmsServiceTest {
         userId = userId,
         cadastralReference = CadastralReference(cadastralReference),
         cropTypes = setOf(CropType.OLIVE),
+        cadastralVerification = CadastralVerification.Unverified,
     )
 }

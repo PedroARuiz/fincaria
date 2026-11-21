@@ -41,3 +41,9 @@ fincaria:
     # commit a real secret here.
     secret: ${JWT_SECRET:dev-only-insecure-jwt-secret-change-me-before-any-real-deploy}
     expiration-seconds: 3600
+  cadastral:
+    # Fraction (0.0-1.0) of simulated cadastral registry calls that fail, to
+    # exercise the retry + circuit breaker. 0.0 keeps lookups healthy; raise it
+    # (e.g. 1.0 via CADASTRAL_FAILURE_RATE) to watch the circuit open in
+    # logs/metrics.
+    failure-rate: ${CADASTRAL_FAILURE_RATE:0.0}

@@ -15,6 +15,7 @@ class FarmTest {
                 userId = UUID.randomUUID().toString(),
                 cadastralReference = CadastralReference("7837301VG8173B0001TT"),
                 cropTypes = emptySet(),
+                cadastralVerification = CadastralVerification.Unverified,
             )
         }
     }
@@ -26,6 +27,7 @@ class FarmTest {
             userId = UUID.randomUUID().toString(),
             cadastralReference = CadastralReference("7837301VG8173B0001TT"),
             cropTypes = setOf(CropType.OLIVE),
+            cadastralVerification = CadastralVerification.Unverified,
         )
 
         assertEquals(setOf(CropType.OLIVE), farm.cropTypes)

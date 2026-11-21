@@ -29,4 +29,12 @@ class FarmJpaEntity(
     @Enumerated(EnumType.STRING)
     @Column(name = "crop_type", nullable = false, length = 50)
     var cropTypes: MutableSet<CropType>,
+    @Column(name = "verification_status", nullable = false, length = 20)
+    var verificationStatus: String,
+    @Column(name = "cadastral_municipality")
+    var cadastralMunicipality: String?,
+    @Column(name = "cadastral_province")
+    var cadastralProvince: String?,
+    @Column(name = "cadastral_area_hectares")
+    var cadastralAreaHectares: Double?,
 )
