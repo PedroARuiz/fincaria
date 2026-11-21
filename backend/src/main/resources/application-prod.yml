@@ -5,3 +5,11 @@ logging:
       # collector (Fluent Bit, Filebeat, Loki, ...) can index them by field.
       # The default profile keeps human-readable plain text for local dev.
       console: ecs
+    json:
+      rename:
+        # Micrometer Tracing puts the IDs in the MDC as `traceId`/`spanId`;
+        # rename them to the canonical ECS field names so logs correlate with
+        # traces out of the box. (Plain-text dev logs still read the raw MDC
+        # keys via the correlation pattern, so those are left untouched.)
+        traceId: trace.id
+        spanId: span.id

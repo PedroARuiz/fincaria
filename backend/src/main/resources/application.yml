@@ -13,6 +13,13 @@ spring:
     hibernate:
       ddl-auto: validate
 
+management:
+  tracing:
+    sampling:
+      # Trace every request so trace/span IDs always show up while developing.
+      # A real production deployment would lower this to sample a fraction.
+      probability: 1.0
+
 fincaria:
   jwt:
     # Dev-only fallback so local runs/tests work with zero setup. Any real
