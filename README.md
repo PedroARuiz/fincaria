@@ -21,7 +21,7 @@ None of these have been implemented yet; they describe the long-term direction o
 
 ## Project status
 
-Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–5 are complete: a hexagonal Spring Boot service with `users`, `farms`, and `auth` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), a versioned, documented REST API, and JWT-based authentication protecting every endpoint except registration and login. See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
+Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–6 are complete: a hexagonal Spring Boot service with `users`, `farms`, and `auth` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), a versioned, documented REST API, JWT-based authentication protecting every endpoint except registration and login, and an observability & resilience layer (structured JSON logging, OpenTelemetry trace propagation, Prometheus metrics with Grafana dashboards, and a Resilience4j retry + circuit breaker around a simulated external dependency that degrades gracefully). See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
 
 ## Running locally
 

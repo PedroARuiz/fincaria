@@ -30,7 +30,7 @@ tracked purely by milestone and its dependencies.
 | 3 | Testing strategy | Unit, integration, test pyramid, coverage | ✅ Done |
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ✅ Done |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ✅ Done |
-| 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ⬜ Not started |
+| 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ✅ Done |
 | 7 | Caching & performance | Redis, query optimization, load testing | ⬜ Not started |
 | 8 | Messaging & event-driven architecture | Kafka/RabbitMQ, domain events, outbox | ⬜ Not started |
 | 9 | Containerization & CI/CD | Docker, pipelines, quality gates | ⬜ Not started |
@@ -258,7 +258,31 @@ committed.
 
 ---
 
-## Milestone 6 — Observability & resilience
+## Milestone 6 — Observability & resilience ✅ Done
+
+**Completed:** structured ECS JSON logging in the `prod` profile and
+trace/span ID propagation through logs via OpenTelemetry/Micrometer tracing;
+Micrometer metrics exposed through the Actuator Prometheus endpoint with a
+local docker-compose Grafana dashboard (`fincaria-http`) visualizing HTTP
+latency and error rate; and a simulated external cadastral registry
+(`CadastralRegistry` outbound port + `SimulatedCadastralApiClient` with a
+configurable failure rate) wrapped in a Resilience4j retry + circuit breaker.
+Resilience4j is wired programmatically with its core modules because no
+Resilience4j Spring Boot starter targets Spring Boot 4 yet — the published
+starter depends on Spring Framework 6, and no `spring7`/`spring-boot4`
+artifact exists — so the circuit breaker (outermost) and retry (nested) are
+composed explicitly in the adapter and kept out of the domain/application.
+Farm creation now enriches the cadastral reference and degrades gracefully: on
+a failed lookup (retries exhausted) or an open circuit the farm is still
+created but marked unverified, modeled with a `CadastralVerification` sealed
+type (`Verified` carrying the enriched details, `Unverified` carrying none) so
+an inconsistent verified/details state is unrepresentable by construction
+rather than guarded at runtime. The circuit breaker and retry metrics are
+bound to the Prometheus registry, state transitions and retries are logged,
+and a second Grafana dashboard (`fincaria-resilience`) visualizes circuit
+state, failure rate and call outcomes; a forced-failure run confirmed the
+circuit opening (`CLOSED → OPEN → HALF_OPEN`) end to end across logs, metrics
+and Grafana.
 
 **Concepts:** structured logging & correlation/trace IDs, metrics
 (Micrometer → Prometheus), distributed tracing (OpenTelemetry), Actuator
