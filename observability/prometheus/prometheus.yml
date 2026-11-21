@@ -1,0 +1,16 @@
+# Prometheus scrape configuration for the local observability stack.
+#
+# The fincaria app runs on the host (./gradlew bootRun), not in a container
+# yet (containerizing the app is Milestone 9). From inside the Prometheus
+# container the host is reachable as `host.docker.internal`, mapped to the
+# Docker gateway via `extra_hosts` in docker-compose.yml so this works on
+# both Docker Desktop (macOS/Windows) and plain Linux.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: fincaria
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8080"]

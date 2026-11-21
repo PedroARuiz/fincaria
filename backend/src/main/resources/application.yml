@@ -25,6 +25,14 @@ management:
       # Trace every request so trace/span IDs always show up while developing.
       # A real production deployment would lower this to sample a fraction.
       probability: 1.0
+  metrics:
+    distribution:
+      percentiles-histogram:
+        # Publish Prometheus histogram buckets for the HTTP server timer so
+        # latency percentiles (p95/p99) can be computed server-side in
+        # Prometheus/Grafana via histogram_quantile() over the `_bucket` series.
+        # Without this, only count/sum/max are exported (mean at best).
+        http.server.requests: true
 
 fincaria:
   jwt:

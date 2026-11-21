@@ -1,0 +1,14 @@
+# Declaratively provisions the Prometheus datasource so Grafana comes up
+# wired and reproducible — no manual UI setup, versioned in the repo.
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    # Fixed uid referenced by the provisioned dashboard's panels.
+    uid: prometheus
+    type: prometheus
+    access: proxy
+    # `prometheus` resolves over the compose network to the service below.
+    url: http://prometheus:9090
+    isDefault: true
+    editable: false

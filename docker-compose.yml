@@ -14,5 +14,36 @@ services:
     volumes:
       - fincaria-db-data:/var/lib/postgresql
 
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - fincaria-prometheus-data:/prometheus
+    # Maps `host.docker.internal` to the host gateway so the scrape config can
+    # reach the app running on the host; needed on Linux, harmless elsewhere.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    ports:
+      - "3000:3000"
+    environment:
+      # Local-dev convenience only: open Grafana with no login as admin. Never
+      # use anonymous admin access in a real deployment.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - fincaria-grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   fincaria-db-data:
+  fincaria-prometheus-data:
+  fincaria-grafana-data:

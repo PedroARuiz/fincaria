@@ -1,0 +1,15 @@
+# Loads every dashboard JSON mounted under the path below on startup, so the
+# dashboards ship as code in the repo instead of being clicked together in
+# the UI and lost.
+apiVersion: 1
+
+providers:
+  - name: fincaria
+    folder: Fincaria
+    type: file
+    # Don't let the UI delete provisioned dashboards; the files are the source
+    # of truth.
+    disableDeletion: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false
