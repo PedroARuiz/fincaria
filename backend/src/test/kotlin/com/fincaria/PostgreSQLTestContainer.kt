@@ -1,7 +1,9 @@
 package com.fincaria
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.testcontainers.containers.GenericContainer
 import org.testcontainers.postgresql.PostgreSQLContainer
+import org.testcontainers.utility.DockerImageName
 
 abstract class PostgreSQLTestContainer {
     companion object {
@@ -23,8 +25,17 @@ abstract class PostgreSQLTestContainer {
         @ServiceConnection
         val postgres: PostgreSQLContainer = PostgreSQLContainer("postgres:18")
 
+        // Redis backs Spring Cache; @ServiceConnection wires the connection from
+        // the container (Spring Boot recognizes the `redis` image). A JVM-wide
+        // singleton for the same reason as the Postgres one above.
+        @JvmStatic
+        @ServiceConnection
+        val redis: GenericContainer<*> =
+            GenericContainer(DockerImageName.parse("redis:7-alpine")).withExposedPorts(6379)
+
         init {
             postgres.start()
+            redis.start()
         }
     }
 }
