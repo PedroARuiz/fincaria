@@ -452,3 +452,11 @@ later if they grow into a real theme.
   brute-force/credential-stuffing protection yet. Likely a natural fit
   for Milestone 6's resilience patterns (Resilience4j) rather than a
   bespoke mechanism here.
+
+- **Internationalize the crop type catalog.** The `crop_types` catalog
+  introduced in Milestone 7 stores a single-locale (Spanish) `label`/
+  `description`; the `code` is already language-neutral, so no doors are
+  closed. When multi-language support for clients becomes a real need,
+  decide the storage/serving strategy then. One constraint to carry over:
+  if the catalog read stays cached, the client locale must be part of the
+  cache key (otherwise the first caller's language is served to everyone).
