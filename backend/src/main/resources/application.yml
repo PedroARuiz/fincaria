@@ -20,6 +20,10 @@ spring:
     # Back Spring Cache with Redis; TTL and value serialization are configured
     # in CacheConfig.
     type: redis
+    # Pre-create the cache at startup so its hit/miss metrics are bound to the
+    # registry immediately (RedisCacheManager otherwise creates caches lazily).
+    cache-names:
+      - cropTypeCatalog
 
 management:
   endpoints:

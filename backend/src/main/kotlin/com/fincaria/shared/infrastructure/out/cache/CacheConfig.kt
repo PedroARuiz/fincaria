@@ -3,6 +3,7 @@ package com.fincaria.shared.infrastructure.out.cache
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -38,4 +39,12 @@ class CacheConfig {
             .disableCachingNullValues()
             .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
     }
+
+    /**
+     * Collect per-cache statistics so Micrometer can publish hit/miss counters
+     * (RedisCacheManager does not track them by default).
+     */
+    @Bean
+    fun redisCacheStatisticsCustomizer(): RedisCacheManagerBuilderCustomizer =
+        RedisCacheManagerBuilderCustomizer { builder -> builder.enableStatistics() }
 }

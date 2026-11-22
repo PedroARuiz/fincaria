@@ -62,4 +62,20 @@ class CropTypeControllerTest(
 
         assertThat(result).hasStatus(401)
     }
+
+    @Test
+    fun `catalog cache hit-miss metrics are exposed on the Prometheus endpoint`() {
+        val token = registerAndLogIn()
+        // Two reads so the cache both populates (miss) and serves (hit).
+        repeat(2) {
+            mockMvc.get().uri("/api/v1/crop-types")
+                .header("Authorization", "Bearer $token")
+                .exchange()
+        }
+
+        val metrics = mockMvc.get().uri("/actuator/prometheus").exchange().response.contentAsString
+
+        assertThat(metrics).contains("cache_gets_total")
+        assertThat(metrics).contains("cache=\"cropTypeCatalog\"")
+    }
 }
