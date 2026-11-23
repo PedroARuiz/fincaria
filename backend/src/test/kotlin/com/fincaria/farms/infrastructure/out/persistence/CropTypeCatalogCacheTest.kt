@@ -2,33 +2,36 @@ package com.fincaria.farms.infrastructure.out.persistence
 
 import com.fincaria.PostgreSQLTestContainer
 import com.fincaria.farms.application.port.`in`.GetCropTypeCatalogUseCase
-import com.fincaria.farms.domain.CropType
-import com.fincaria.farms.domain.CropTypeCatalogEntry
-import com.fincaria.farms.infrastructure.out.persistence.CropTypeCatalogRepositoryImpl.Companion.CROP_TYPE_CATALOG_CACHE
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.cache.CacheManager
-import org.springframework.cache.interceptor.SimpleKey
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.transaction.annotation.Transactional
 
 @SpringBootTest
+// Transactional so the catalog change made behind the cache's back rolls back
+// instead of polluting the shared database.
+@Transactional
 class CropTypeCatalogCacheTest(
     @Autowired private val getCropTypeCatalogUseCase: GetCropTypeCatalogUseCase,
-    @Autowired private val cacheManager: CacheManager,
+    @Autowired private val jdbcTemplate: JdbcTemplate,
 ) : PostgreSQLTestContainer() {
     @Test
-    fun `the catalog read is served from the Redis cache, bypassing the database`() {
-        val cache = requireNotNull(cacheManager.getCache(CROP_TYPE_CATALOG_CACHE))
-        // Pre-seed the cache with a value the database would never return. If the
-        // read is served from the cache (not the DB), the use case returns this.
-        // This also exercises the real Redis JSON serialize/deserialize round-trip.
-        val cachedOnly = listOf(CropTypeCatalogEntry(CropType.OLIVE, "Cached-only label", null, 99))
-        cache.put(SimpleKey.EMPTY, cachedOnly)
-        try {
-            assertThat(getCropTypeCatalogUseCase()).isEqualTo(cachedOnly)
-        } finally {
-            cache.evict(SimpleKey.EMPTY)
-        }
+    fun `the catalog is served from the cache, not re-read from the database`() {
+        // First read: populates the cache (or hits an already-warm one).
+        val first = getCropTypeCatalogUseCase()
+        assertThat(first).isNotEmpty()
+
+        // Change the catalog in the database behind the cache's back.
+        jdbcTemplate.update("UPDATE crop_types SET label = 'Changed in DB' WHERE code = 'OLIVE'")
+
+        // The second read still returns the cached value — the DB change is
+        // invisible — proving it was served from Redis, not re-queried from
+        // Postgres. Robust to whatever the cache already held: both reads see the
+        // same cached snapshot, which the DB change never reaches.
+        val second = getCropTypeCatalogUseCase()
+        assertThat(second).isEqualTo(first)
+        assertThat(second.none { it.label == "Changed in DB" }).isTrue()
     }
 }
