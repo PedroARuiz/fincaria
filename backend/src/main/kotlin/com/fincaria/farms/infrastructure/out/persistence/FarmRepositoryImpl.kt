@@ -4,7 +4,12 @@ import com.fincaria.farms.application.port.out.FarmRepository
 import com.fincaria.farms.domain.CadastralDetails
 import com.fincaria.farms.domain.CadastralReference
 import com.fincaria.farms.domain.CadastralVerification
+import com.fincaria.farms.domain.CropType
 import com.fincaria.farms.domain.Farm
+import com.fincaria.shared.application.PagedResult
+import com.fincaria.shared.application.PageRequest
+import com.fincaria.shared.infrastructure.out.persistence.toPageable
+import com.fincaria.shared.infrastructure.out.persistence.toPagedResult
 import org.springframework.stereotype.Repository
 import java.util.UUID
 
@@ -33,8 +38,16 @@ class FarmRepositoryImpl(
     override fun existsByCadastralReference(cadastralReference: CadastralReference): Boolean =
         farmJpaRepository.existsByCadastralReference(cadastralReference = cadastralReference.value)
 
-    override fun getUserFarms(userId: String): List<Farm> =
-        farmJpaRepository.findByUserId(UUID.fromString(userId)).map { it.toDomain() }
+    override fun getUserFarms(userId: String, cropType: CropType?, pageRequest: PageRequest): PagedResult<Farm> {
+        val userUuid = UUID.fromString(userId)
+        val pageable = pageRequest.toPageable()
+        val page = if (cropType == null) {
+            farmJpaRepository.findByUserId(userUuid, pageable)
+        } else {
+            farmJpaRepository.findByUserIdAndCropType(userUuid, cropType, pageable)
+        }
+        return page.toPagedResult { it.toDomain() }
+    }
 
     private fun FarmJpaEntity.toDomain(): Farm =
         Farm(

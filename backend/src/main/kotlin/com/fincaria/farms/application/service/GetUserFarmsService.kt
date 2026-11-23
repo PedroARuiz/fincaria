@@ -6,9 +6,7 @@ import com.fincaria.farms.domain.CropType
 import com.fincaria.farms.domain.Farm
 import com.fincaria.shared.application.PagedResult
 import com.fincaria.shared.application.PageRequest
-import com.fincaria.shared.application.SortDirection
 import org.springframework.stereotype.Service
-import kotlin.math.ceil
 
 @Service
 class GetUserFarmsService(
@@ -19,29 +17,20 @@ class GetUserFarmsService(
         cropType: CropType?,
         pageRequest: PageRequest,
     ): PagedResult<Farm> {
-        val filtered = sorted(
-            farmRepository.getUserFarms(userId).filter { farm -> cropType == null || cropType in farm.cropTypes },
-            pageRequest,
-        )
-
-        val fromIndex = (pageRequest.page * pageRequest.size).coerceIn(0, filtered.size)
-        val toIndex = (fromIndex + pageRequest.size).coerceIn(fromIndex, filtered.size)
-
-        return PagedResult(
-            content = filtered.subList(fromIndex, toIndex),
-            page = pageRequest.page,
-            size = pageRequest.size,
-            totalElements = filtered.size.toLong(),
-            totalPages = if (pageRequest.size == 0) 0 else ceil(filtered.size.toDouble() / pageRequest.size).toInt(),
-        )
+        // Validate the sort field here (application policy) so an unknown field
+        // becomes a clean 400 instead of leaking a raw property name into the
+        // ORDER BY and failing at the database with a 500.
+        requireSupportedSortField(pageRequest.sortBy)
+        return farmRepository.getUserFarms(userId = userId, cropType = cropType, pageRequest = pageRequest)
     }
 
-    private fun sorted(farms: List<Farm>, pageRequest: PageRequest): List<Farm> {
-        val sortBy = pageRequest.sortBy ?: return farms
-        val comparator = when (sortBy) {
-            "cadastralReference" -> compareBy<Farm> { it.cadastralReference.value }
-            else -> throw IllegalArgumentException("Unsupported sort field: $sortBy")
+    private fun requireSupportedSortField(sortBy: String?) {
+        require(sortBy == null || sortBy in SUPPORTED_SORT_FIELDS) {
+            "Unsupported sort field: $sortBy"
         }
-        return farms.sortedWith(if (pageRequest.sortDirection == SortDirection.DESC) comparator.reversed() else comparator)
+    }
+
+    private companion object {
+        val SUPPORTED_SORT_FIELDS = setOf("cadastralReference")
     }
 }
