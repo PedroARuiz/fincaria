@@ -7,11 +7,15 @@ import com.fincaria.farms.domain.CadastralDetails
 import com.fincaria.farms.domain.CadastralReference
 import com.fincaria.farms.domain.CadastralVerification
 import com.fincaria.farms.domain.CropType
+import com.fincaria.farms.domain.DomainEvent
+import com.fincaria.farms.domain.FarmRegistered
 import com.fincaria.farms.domain.exception.DuplicatedCadastralReferenceException
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -21,11 +25,16 @@ class CreateFarmServiceTest {
 
     val farmRepository: FarmRepository = mockk()
     val cadastralRegistry: CadastralRegistry = mockk()
-    val service = CreateFarmService(farmRepository = farmRepository, cadastralRegistry = cadastralRegistry)
+    val farmWriter: FarmWriter = mockk()
+    val service = CreateFarmService(
+        farmRepository = farmRepository,
+        cadastralRegistry = cadastralRegistry,
+        farmWriter = farmWriter,
+    )
 
     @BeforeEach
     fun setup() {
-        every { farmRepository.save(any()) } answers { firstArg() }
+        every { farmWriter.save(any(), any()) } answers { firstArg() }
         every { farmRepository.existsByCadastralReference(cadastralReference) } answers { false }
         every { cadastralRegistry.lookup(cadastralReference) } returns cadastralDetails
     }
@@ -51,7 +60,21 @@ class CreateFarmServiceTest {
         val farm = service(command = command)
 
         assertEquals(CadastralVerification.Unverified, farm.cadastralVerification)
-        verify { farmRepository.save(any()) }
+        verify { farmWriter.save(any(), any()) }
+    }
+
+    @Test
+    fun `creating a farm records a FarmRegistered event for the saved farm`() {
+        val eventSlot = slot<DomainEvent>()
+        every { farmWriter.save(any(), capture(eventSlot)) } answers { firstArg() }
+
+        val farm = service(command = command)
+
+        val event = assertInstanceOf(FarmRegistered::class.java, eventSlot.captured)
+        assertEquals(farm.id, event.farmId)
+        assertEquals(command.userId, event.userId)
+        assertEquals(cadastralReference.value, event.cadastralReference)
+        assertEquals(command.cropTypes, event.cropTypes)
     }
 
     @Test
@@ -61,7 +84,7 @@ class CreateFarmServiceTest {
         assertThrows<DuplicatedCadastralReferenceException> {
             service(command = command)
         }
-        verify(exactly = 0) { farmRepository.save(any()) }
+        verify(exactly = 0) { farmWriter.save(any(), any()) }
     }
 
     @Test
@@ -71,7 +94,7 @@ class CreateFarmServiceTest {
         assertThrows<IllegalArgumentException> {
             service(command = commandWithNoCropTypes)
         }
-        verify(exactly = 0) { farmRepository.save(any()) }
+        verify(exactly = 0) { farmWriter.save(any(), any()) }
     }
 
     companion object {
