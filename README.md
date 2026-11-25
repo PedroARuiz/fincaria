@@ -21,11 +21,11 @@ None of these have been implemented yet; they describe the long-term direction o
 
 ## Project status
 
-Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–6 are complete: a hexagonal Spring Boot service with `users`, `farms`, and `auth` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), a versioned, documented REST API, JWT-based authentication protecting every endpoint except registration and login, and an observability & resilience layer (structured JSON logging, OpenTelemetry trace propagation, Prometheus metrics with Grafana dashboards, and a Resilience4j retry + circuit breaker around a simulated external dependency that degrades gracefully). See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
+Fincaria is in early development, built incrementally as a self-directed path into backend development. Milestones 0–7 are complete: a hexagonal Spring Boot service with `users`, `farms`, and `auth` bounded contexts, PostgreSQL persistence via Flyway, a full test suite (unit + integration, with an enforced coverage threshold), a versioned, documented REST API, JWT-based authentication protecting every endpoint except registration and login, an observability & resilience layer (structured JSON logging, OpenTelemetry trace propagation, Prometheus metrics with Grafana dashboards, and a Resilience4j retry + circuit breaker around a simulated external dependency that degrades gracefully), and a caching & performance pass (the crop-type catalog cached in Redis via Spring Cache with hit/miss metrics, the farms-listing N+1 fixed with DB-side pagination and batch fetching, and a k6 load test documenting an ~88× throughput improvement). See [ROADMAP.md](./ROADMAP.md) for the current milestone and what's planned next.
 
 ## Running locally
 
-1. Start the local Postgres database: `docker compose up -d`.
+1. Start the local stack (Postgres, Redis, Prometheus, Grafana): `docker compose up -d`.
 2. Run the app: `./gradlew bootRun`.
 3. The API is served at `http://localhost:8080/api/v1/...`; interactive
    docs are at `http://localhost:8080/swagger-ui/index.html` (raw OpenAPI
@@ -43,14 +43,14 @@ integration tests, and a JaCoCo coverage check).
 - **Testing:** JUnit 5, MockK, Testcontainers, JaCoCo
 - **API:** springdoc-openapi (OpenAPI/Swagger), URI versioning
 - **Security:** Spring Security, JWT (jjwt), BCrypt password hashing
+- **Observability & resilience:** Micrometer, Prometheus, Grafana, OpenTelemetry, Resilience4j
+- **Caching & performance:** Redis (Spring Cache), JPA batch fetching, k6 load testing
 
 ### Planned
 
 Each item maps to a milestone in [ROADMAP.md](./ROADMAP.md):
 
 - **Geospatial data:** PostGIS, once a migration actually needs geometry (follow-up to Milestone 2)
-- **Observability & resilience:** Micrometer, Prometheus, Grafana, OpenTelemetry, Resilience4j — Milestone 6
-- **Caching:** Redis — Milestone 7
 - **Messaging:** Kafka or RabbitMQ — Milestone 8
 - **Containerization & CI/CD:** Docker, GitHub Actions, GHCR, ktlint, detekt — Milestone 9
 - **Infrastructure:** Terraform, Kubernetes / Fly.io / Render — Milestone 10

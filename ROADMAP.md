@@ -31,7 +31,7 @@ tracked purely by milestone and its dependencies.
 | 4 | API design & documentation | REST maturity, OpenAPI, pagination/versioning | ✅ Done |
 | 5 | Security | AuthN/AuthZ, Spring Security, JWT/OAuth2 | ✅ Done |
 | 6 | Observability & resilience | Logging, metrics, tracing, circuit breakers | ✅ Done |
-| 7 | Caching & performance | Redis, query optimization, load testing | ⬜ Not started |
+| 7 | Caching & performance | Redis, query optimization, load testing | ✅ Done |
 | 8 | Messaging & event-driven architecture | Kafka/RabbitMQ, domain events, outbox | ⬜ Not started |
 | 9 | Containerization & CI/CD | Docker, pipelines, quality gates | ⬜ Not started |
 | 10 | Cloud deployment & infrastructure | IaC, managed services, environments | ⬜ Not started |
@@ -303,7 +303,21 @@ breakers via Resilience4j), graceful degradation.
 
 ---
 
-## Milestone 7 — Caching & performance
+## Milestone 7 — Caching & performance ✅ Done
+
+**Completed:** the read-heavy, rarely-changing crop-type catalog
+(`GET /api/v1/crop-types`, backed by a reference table) is cached in Redis
+through the Spring Cache abstraction, with cache hit/miss exposed as Micrometer
+metrics on the Prometheus endpoint and a Grafana dashboard (`fincaria-cache`).
+The farms-listing N+1 was fixed by pushing pagination, the crop-type filter and
+sorting into the database and batch-loading the `crop_types` collection
+(`@BatchSize`); a Hibernate-statistics regression test (`FarmListingQueryCountTest`)
+pins the statement count so it no longer grows with the farm count. A k6 load
+test against `GET /api/v1/farms` (harness in [`load-test/`](./load-test/))
+records the baseline and a before/after comparison of the fix: at 500 farms the
+listing went from ~46 req/s and ~458ms p95 to ~4030 req/s and ~7ms p95 (~88×
+throughput). The full write-up is in
+[`docs/performance/farms-listing-load-test.md`](./docs/performance/farms-listing-load-test.md).
 
 **Concepts:** caching strategies & invalidation, Spring Cache abstraction,
 Redis, N+1 query problems, database indexing, query plans, load/performance
