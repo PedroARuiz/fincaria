@@ -21,6 +21,40 @@ services:
     ports:
       - "6379:6379"
 
+  kafka:
+    # Event broker for the outbox relay + domain-event consumers (Milestone 8).
+    # Kafka 4.x is KRaft-only (ZooKeeper was removed in 4.0), so this single
+    # container runs as both broker and controller — no separate coordinator.
+    # Ephemeral by design — no volume — since Postgres' outbox table is the
+    # source of truth for events, so the log can always be rebuilt from it.
+    image: apache/kafka:4.4.0
+    ports:
+      # Only the broker (client) listener is published to the host; the app
+      # runs on the host and connects to localhost:9092, like db and redis.
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      # Bind the broker listener on 9092 and the internal KRaft controller
+      # listener on 9093 (the latter is never published to the host).
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      # What the broker tells clients to reconnect on. The app lives on the
+      # host, so it must advertise localhost:9092 — the classic Kafka gotcha.
+      # The controller listener is deliberately not advertised (KRaft rule).
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      # Single-node cluster: every internal topic replicates to just one broker.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      # Form consumer groups immediately in local dev instead of waiting.
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Topics are created explicitly (via migration/CLI), never on first use,
+      # so a typo in a topic name fails loudly instead of silently creating one.
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
   prometheus:
     image: prom/prometheus:v3.1.0
     ports:
