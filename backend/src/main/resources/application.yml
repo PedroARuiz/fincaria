@@ -24,6 +24,14 @@ spring:
     # registry immediately (RedisCacheManager otherwise creates caches lazily).
     cache-names:
       - cropTypeCatalog
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      # Wait for all in-sync replicas to acknowledge before a send completes,
+      # so the relay never marks an event published on a write that was lost.
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 management:
   endpoints:
@@ -59,3 +67,17 @@ fincaria:
     # (e.g. 1.0 via CADASTRAL_FAILURE_RATE) to watch the circuit open in
     # logs/metrics.
     failure-rate: ${CADASTRAL_FAILURE_RATE:0.0}
+  outbox:
+    relay:
+      # Toggles the whole outbox -> Kafka path (the scheduled relay and the
+      # topic provisioning). Disabled in the `test` profile so context tests
+      # don't need a broker; the relay's own integration test re-enables it.
+      enabled: ${OUTBOX_RELAY_ENABLED:true}
+      # Poll interval of the relay. fixedDelay (not fixedRate): a tick only
+      # starts once the previous one has finished, so ticks never overlap.
+      poll-delay-ms: 1000
+      # Maximum events published per tick.
+      batch-size: 100
+      topic: farm-events
+      topic-partitions: 3
+      topic-replicas: 1

@@ -1,10 +1,15 @@
 package com.fincaria
 
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection
+import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.postgresql.PostgreSQLContainer
 import org.testcontainers.utility.DockerImageName
 
+// The `test` profile overlays application-test.yml, which disables the outbox
+// relay so these context tests don't need a Kafka broker. Inherited by every
+// @SpringBootTest through this base class.
+@ActiveProfiles("test")
 abstract class PostgreSQLTestContainer {
     companion object {
         // Plain postgres for now (no migration uses PostGIS geometry yet) — it ships

@@ -28,6 +28,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-kafka")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(libs.spring.security.crypto)
     implementation(libs.jjwt.api)
@@ -46,6 +47,7 @@ dependencies {
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
     testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.testcontainers.kafka)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

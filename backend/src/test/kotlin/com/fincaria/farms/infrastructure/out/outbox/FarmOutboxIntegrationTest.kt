@@ -47,7 +47,10 @@ class FarmOutboxIntegrationTest(
         // database before reading the raw row back through JdbcTemplate.
         outboxJpaRepository.flush()
 
-        val rows = jdbcTemplate.queryForList("SELECT * FROM outbox")
+        // Scope to the farm just created: the shared container accumulates
+        // committed outbox rows from other tests, so query by aggregate id
+        // rather than asserting on the whole table.
+        val rows = jdbcTemplate.queryForList("SELECT * FROM outbox WHERE aggregate_id = ?", farm.id)
         assertThat(rows).hasSize(1)
 
         val row = rows.single()

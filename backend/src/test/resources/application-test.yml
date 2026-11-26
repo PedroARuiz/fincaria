@@ -1,0 +1,9 @@
+# Active for every @SpringBootTest (via @ActiveProfiles("test") on
+# PostgreSQLTestContainer). Overlays the default application.yml; only the keys
+# below are overridden. Keeps the outbox -> Kafka path off by default so
+# context tests don't need a broker. OutboxRelayIntegrationTest re-enables it
+# with an inline property and provides a Kafka container.
+fincaria:
+  outbox:
+    relay:
+      enabled: false
